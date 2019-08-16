@@ -106,7 +106,7 @@ def urlimport(url: str) -> None:
 def github_repo(username: str, repo: str, *, module: str='', branch: str='master') -> None:
     try:
         github_raw_url = f"https://raw.githubusercontent.com/{username}/{repo}/{branch}"
-        git_finder = UrlMetaFinder(module, github_raw_url)
+        git_finder = UrlMetaFinder(github_raw_url, module)
         sys.meta_path.append(git_finder)
         yield
     finally:
@@ -117,7 +117,7 @@ def github_repo(username: str, repo: str, *, module: str='', branch: str='master
 def bitbucket_repo(username: str, repo: str, *, module: str='', branch: str='master') -> None:
     try:
         bitbucket_raw_url = f"https://bitbucket.org/{username}/{repo}/raw/{branch}"
-        bitbucket_finder = UrlMetaFinder(module, bitbucket_raw_url)
+        bitbucket_finder = UrlMetaFinder(bitbucket_raw_url, module)
         sys.meta_path.append(bitbucket_finder)
         yield
     finally:
