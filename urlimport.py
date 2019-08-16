@@ -9,7 +9,7 @@ import urllib.request
 from typing import cast, Union
 
 
-__all__ = ['UrlMetaFinder', 'github_repo', 'bitbucket_repo']
+__all__ = ['UrlMetaFinder', 'urlimport', 'github_repo', 'bitbucket_repo']
 
 
 def check(url: str) -> bool:
@@ -59,9 +59,9 @@ class UrlPackageLoader(UrlModuleLoader):
 
 class UrlMetaFinder(importlib.abc.MetaPathFinder):
     
-    def __init__(self, module: str, base_url: str) -> None:
-        self.module = module
+    def __init__(self, base_url: str, module: str='') -> None:
         self.base_url = base_url
+        self.module = module
 
     def find_spec(self, fullname, path, target=None):
         if path is None:
@@ -90,6 +90,16 @@ class UrlMetaFinder(importlib.abc.MetaPathFinder):
 
         origin = base_url
         return importlib.util.spec_from_loader(fullname, loader, origin=origin)
+
+
+@contextlib.contextmanager
+def urlimport(url: str) -> None:
+    try:
+        url_finder = UrlMetaFinder(url)
+        sys.meta_path.append(url_finder)
+        yield
+    finally:
+        sys.meta_path.remove(url_finder)
 
 
 @contextlib.contextmanager
